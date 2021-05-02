@@ -93,13 +93,11 @@ def getAnalysis():
                 analysis = {"classification": classification, "confidence": confidence}
 
             elif data_type == 1:
-                pass
                 analysis = classifier(preprocess(text))[0]
                 classification = analysis["label"].lower()
                 confidence = analysis["score"] * 100
                 analysis = {"classification": classification, "confidence": confidence}
             else:
-                pass
                 encoded_input = tokenizer(preprocess(text), return_tensors='tf')
                 output = model(encoded_input)
                 scores = output[0][0].numpy()
