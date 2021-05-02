@@ -5,11 +5,14 @@ import tweepy
 import nltk
 from nltk.sentiment import SentimentIntensityAnalyzer
 
-from transformers import pipeline, AutoTokenizer, TFAutoModelForSequenceClassification
-import tensorflow as tf
+from transformers import pipeline, AutoTokenizer, AutoModelForSequenceClassification
+import torch
+from scipy.special import softmax
 
 import os
 import re, string
+
+torch.set_num_threads(1)
 
 # Setup flask application
 app = Flask(__name__)
@@ -26,7 +29,7 @@ sia = SentimentIntensityAnalyzer()
 # Setup transformers
 classifier = pipeline('sentiment-analysis')
 tokenizer = AutoTokenizer.from_pretrained("cardiffnlp/twitter-roberta-base-sentiment")
-model = TFAutoModelForSequenceClassification.from_pretrained("cardiffnlp/twitter-roberta-base-sentiment")
+model = AutoModelForSequenceClassification.from_pretrained("cardiffnlp/twitter-roberta-base-sentiment")
 
 #import os, psutil; print(psutil.Process(os.getpid()).memory_info().rss / 1024 ** 2)
 
@@ -104,10 +107,10 @@ def getAnalysis():
                 confidence = analysis["score"] * 100
                 analysis = {"classification": classification, "confidence": confidence}
             else:
-                encoded_input = tokenizer(preprocess(text), return_tensors='tf')
-                output = model(encoded_input)
-                scores = output[0][0].numpy()
-                analysis = tf.nn.softmax(scores).numpy().tolist()
+                encoded_input = tokenizer(preprocess(text), return_tensors='pt')
+                output = model(**encoded_input)
+                scores = output[0][0].detach().numpy()
+                analysis = softmax(scores).tolist()
                 print(analysis)
 
                 max_score = max(analysis)
