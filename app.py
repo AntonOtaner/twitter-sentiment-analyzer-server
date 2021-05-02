@@ -30,16 +30,16 @@ model = TFAutoModelForSequenceClassification.from_pretrained("cardiffnlp/twitter
 
 #import os, psutil; print(psutil.Process(os.getpid()).memory_info().rss / 1024 ** 2)
 
+
 # Preprocess text (username and link placeholders)
 def preprocess(text):
     new_text = []
-
-
     for t in text.split(" "):
         t = '@user' if t.startswith('@') and len(t) > 1 else t
         t = 'http' if t.startswith('http') else t
         new_text.append(t)
     return " ".join(new_text)
+
 
 @app.route('/getAnalysis', methods=['POST'])
 def getAnalysis():
@@ -79,8 +79,11 @@ def getAnalysis():
         # 0.22520072758197784, netural
         # 0.7691947817802429 good
 
+            print(text)
+
             if data_type == 0:
                 analysis = sia.polarity_scores(preprocess(text))
+                print(analysis)
 
                 if analysis["compound"] >= 0.05:
                     classification = "positive"
@@ -93,13 +96,8 @@ def getAnalysis():
                 analysis = {"classification": classification, "confidence": confidence}
 
             elif data_type == 1:
-
-                print(text)
-
                 analysis = classifier(preprocess(text))[0]
-
                 print(analysis)
-
                 classification = analysis["label"].lower()
                 confidence = analysis["score"] * 100
                 analysis = {"classification": classification, "confidence": confidence}
@@ -108,6 +106,7 @@ def getAnalysis():
                 output = model(encoded_input)
                 scores = output[0][0].numpy()
                 analysis = tf.nn.softmax(scores).numpy().tolist()
+                print(analysis)
 
                 max_score = max(analysis)
                 max_index = analysis.index(max_score)
