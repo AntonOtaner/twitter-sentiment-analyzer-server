@@ -51,13 +51,15 @@ def getAnalysis():
     print(amount)
     print(data_type)
 
-    if query and amount and type:
+    if query and amount:
 
         tweets = []
         general_analysis = {}
         pos = 0
         neu = 0
         neg = 0
+
+        print(tweepy.API)
 
         for tweet in tweepy.Cursor(api.search, q=query, lang="en", tweet_mode="extended").items(amount):
             if 'retweeted_status' in dir(tweet):
