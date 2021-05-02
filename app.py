@@ -51,7 +51,7 @@ def getAnalysis():
     print(amount)
     print(data_type)
 
-    if query:
+    if query and amount and type:
 
         tweets = []
         general_analysis = {}
@@ -93,7 +93,13 @@ def getAnalysis():
                 analysis = {"classification": classification, "confidence": confidence}
 
             elif data_type == 1:
+
+                print(text)
+
                 analysis = classifier(preprocess(text))[0]
+
+                print(analysis)
+
                 classification = analysis["label"].lower()
                 confidence = analysis["score"] * 100
                 analysis = {"classification": classification, "confidence": confidence}
