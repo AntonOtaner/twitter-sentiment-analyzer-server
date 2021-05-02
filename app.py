@@ -28,7 +28,7 @@ classifier = pipeline('sentiment-analysis')
 tokenizer = AutoTokenizer.from_pretrained("cardiffnlp/twitter-roberta-base-sentiment")
 model = TFAutoModelForSequenceClassification.from_pretrained("cardiffnlp/twitter-roberta-base-sentiment")
 
-import os, psutil; print(psutil.Process(os.getpid()).memory_info().rss / 1024 ** 2)
+#import os, psutil; print(psutil.Process(os.getpid()).memory_info().rss / 1024 ** 2)
 
 # Preprocess text (username and link placeholders)
 def preprocess(text):
@@ -135,7 +135,7 @@ def getAnalysis():
             "negative": neg/total * 100
         }
 
-        import os, psutil; print(psutil.Process(os.getpid()).memory_info().rss / 1024 ** 2)
+        #import os, psutil; print(psutil.Process(os.getpid()).memory_info().rss / 1024 ** 2)
 
         return jsonify({
             "message": f"Success! Your post request would include a query of {query} containing {amount} tweets",
